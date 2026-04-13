@@ -1,59 +1,203 @@
----
 name: Bug report
-about: Report a bug, crash, or unexpected behavior in lestx's Standable Striders
-title: '[Bug] '
-labels: bug
-assignees: ''
----
+description: Report a bug, crash, or unexpected behavior in lestx's Standable Striders
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
 
-## Summary
-A clear and short description of the problem.
+        Please fill out this form as clearly as possible. The more detail you provide, the easier it is to reproduce and fix the issue.
 
-## Environment
-- **Minecraft version:**
-- **Mod version:**
-- **Loader:** Fabric / Quilt / other
-- **Loader version:**
-- **Fabric API version:**
-- **Singleplayer or multiplayer:**
-- **Server type (if multiplayer):** Integrated / dedicated / other
-- **Does this happen with only this mod installed?** Yes / No / Not tested
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Give a short description of the issue.
+      placeholder: Example: The player falls through the Strider after dismounting on lava.
+    validations:
+      required: true
 
-## What happened?
-Describe the bug as clearly as possible.
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue type
+      description: What kind of problem are you reporting?
+      options:
+        - Gameplay bug
+        - Visual bug
+        - Collision / standing bug
+        - Dismount bug
+        - Crash
+        - Compatibility issue
+        - Performance issue
+        - Other
+    validations:
+      required: true
 
-## Steps to reproduce
-1. 
-2. 
-3. 
-4. 
+  - type: input
+    id: minecraft_version
+    attributes:
+      label: Minecraft version
+      placeholder: "Example: 1.21.11"
+    validations:
+      required: true
 
-## Expected behavior
-Describe what you expected to happen instead.
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod version
+      placeholder: "Example: 1.0.0"
+    validations:
+      required: true
 
-## Actual behavior
-Describe what actually happened.
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      options:
+        - Fabric
+        - Quilt
+        - Other
+    validations:
+      required: true
 
-## Additional details
-Include anything else that may help, such as:
-- whether the Strider was an adult or baby
-- whether the player was riding, standing on top, or dismounting
-- whether the Strider was on lava or land
-- whether this happens every time or only sometimes
+  - type: input
+    id: loader_version
+    attributes:
+      label: Loader version
+      placeholder: "Example: 0.18.4"
+    validations:
+      required: true
 
-## Logs / crash reports / screenshots
-Please attach or paste any relevant logs, crash reports, screenshots, or video clips.
+  - type: input
+    id: fabric_api_version
+    attributes:
+      label: Fabric API version
+      description: If applicable.
+      placeholder: "Example: 0.141.3+1.21.11"
+    validations:
+      required: false
 
-- `latest.log`:
-- crash report:
-- screenshots / video:
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where does the issue happen?
+      options:
+        - Singleplayer
+        - Multiplayer (client)
+        - Multiplayer (server)
+        - Both singleplayer and multiplayer
+        - Not sure
+    validations:
+      required: true
 
-## Mod list
-If other mods are installed, list the relevant ones here.
+  - type: dropdown
+    id: only_this_mod
+    attributes:
+      label: Does it happen with only this mod installed?
+      options:
+        - "Yes"
+        - "No"
+        - Not tested
+    validations:
+      required: true
 
-## Checklist
-- [ ] I am using a supported Minecraft version for this release.
-- [ ] I tested the issue with the latest available version of the mod.
-- [ ] I checked for duplicate issues before creating this report.
-- [ ] I included steps to reproduce the problem.
-- [ ] I attached logs, crash reports, or screenshots if available.
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it happen?
+      options:
+        - Every time
+        - Often
+        - Sometimes
+        - Only once
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to trigger the issue.
+      placeholder: |
+        1. Spawn an adult Strider
+        2. Stand on top of it
+        3. Move / dismount / enter lava
+        4. Observe the issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      placeholder: Example: The player should remain standing on top of the Strider.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual behavior
+      placeholder: Example: The player gets pushed off and falls into lava.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_details
+    attributes:
+      label: Additional details
+      description: Add anything else that could help.
+      placeholder: |
+        Useful details:
+        - Was the Strider an adult or baby?
+        - Were you riding it or standing on top of it?
+        - Were you on lava or land?
+        - Did this happen after dismounting?
+        - Were there other entity-related mods installed?
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs, crash reports, screenshots, or video
+      description: Paste links or attach files if available.
+      placeholder: |
+        - latest.log:
+        - crash report:
+        - screenshot / video:
+    validations:
+      required: false
+
+  - type: textarea
+    id: mod_list
+    attributes:
+      label: Other mods installed
+      description: List any other relevant mods.
+      placeholder: |
+        Example:
+        - Fabric API
+        - Mod Menu
+        - Sodium
+        - Any Strider / movement / collision related mods
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I am using a supported Minecraft version for this release.
+          required: true
+        - label: I tested the issue with the latest available version of the mod.
+          required: true
+        - label: I checked for existing issues before submitting this report.
+          required: true
+        - label: I included clear steps to reproduce the issue.
+          required: true
