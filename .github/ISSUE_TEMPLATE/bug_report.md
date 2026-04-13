@@ -1,38 +1,59 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+about: Report a bug, crash, or unexpected behavior in lestx's Standable Striders
+title: '[Bug] '
+labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Summary
+A clear and short description of the problem.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## Environment
+- **Minecraft version:**
+- **Mod version:**
+- **Loader:** Fabric / Quilt / other
+- **Loader version:**
+- **Fabric API version:**
+- **Singleplayer or multiplayer:**
+- **Server type (if multiplayer):** Integrated / dedicated / other
+- **Does this happen with only this mod installed?** Yes / No / Not tested
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## What happened?
+Describe the bug as clearly as possible.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Steps to reproduce
+1. 
+2. 
+3. 
+4. 
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+## Expected behavior
+Describe what you expected to happen instead.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## Actual behavior
+Describe what actually happened.
 
-**Additional context**
-Add any other context about the problem here.
+## Additional details
+Include anything else that may help, such as:
+- whether the Strider was an adult or baby
+- whether the player was riding, standing on top, or dismounting
+- whether the Strider was on lava or land
+- whether this happens every time or only sometimes
+
+## Logs / crash reports / screenshots
+Please attach or paste any relevant logs, crash reports, screenshots, or video clips.
+
+- `latest.log`:
+- crash report:
+- screenshots / video:
+
+## Mod list
+If other mods are installed, list the relevant ones here.
+
+## Checklist
+- [ ] I am using a supported Minecraft version for this release.
+- [ ] I tested the issue with the latest available version of the mod.
+- [ ] I checked for duplicate issues before creating this report.
+- [ ] I included steps to reproduce the problem.
+- [ ] I attached logs, crash reports, or screenshots if available.
