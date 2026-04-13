@@ -1,30 +1,46 @@
 ---
 name: Feature request
-about: Suggest an idea, improvement, or new feature for lestx's Standable Striders
-labels: [enhancement]
+about: Suggest an idea or improvement for lestx's Standable Striders
+title: "[Feature Request] "
+labels: enhancement
+assignees: ""
+
 ---
 
 ## Summary
-Describe the feature or improvement you would like to see.
+
+A short and clear description of the feature you would like to see.
 
 ## Problem to solve
-What problem, limitation, or inconvenience would this feature address?
+
+What problem would this feature solve?  
+Describe the current limitation, inconvenience, or missing behavior.
 
 ## Proposed solution
-Describe how you think this feature should work.
+
+Describe the feature you want as clearly as possible.
 
 ## Example use case
-Explain when or why this feature would be useful in normal gameplay.
+
+Explain how this feature would be used in normal gameplay.
+
+## Alternatives considered
+
+Describe any alternative solutions or ideas you have considered.
 
 ## Additional details
-Include anything else that may help explain the idea.
+
+Add any extra context, screenshots, videos, mockups, or technical notes here.
+
+## Environment
 
 - Minecraft version:
 - Mod version:
 - Mod loader:
 - Environment: Singleplayer / Multiplayer / Server
 
-## Notes
-- Please keep feature requests focused and clear.
-- If this is about a bug, use the bug report template instead.
-- If possible, explain how the feature fits the goal of the mod.
+## Checklist
+
+- [ ] I checked existing issues to make sure this feature has not already been suggested
+- [ ] This suggestion is related to lestx's Standable Striders
+- [ ] I provided enough detail to explain the idea clearly
