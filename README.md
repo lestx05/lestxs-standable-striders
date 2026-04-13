@@ -17,12 +17,10 @@ The goal is simple: expand the utility of vanilla Striders without changing thei
 
 ## Environment
 
-- **Minecraft:** Add your supported version(s) here
-- **Loader:** Add your loader here (for example: Fabric)
-- **Client-side:** Optional or Required
-- **Server-side:** Optional or Required
-
-> Update the environment section above so it matches your final build exactly.
+- **Minecraft:** 1.21.11
+- **Loader:** Fabric
+- **Client-side:** Optional
+- **Server-side:** Required
 
 ## Installation
 
