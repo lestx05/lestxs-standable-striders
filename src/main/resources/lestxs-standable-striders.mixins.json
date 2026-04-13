@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.lestxs.standable.striders.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"MobPlatformFreezeMixin",
+		"StriderStandMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

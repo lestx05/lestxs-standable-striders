@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "lestxs-standable-striders",
+	"version": "${version}",
+	"name": "lestx's Standable Striders",
+	"description": "Lets players stand on top of Nether Striders with Happy Ghast-style stillness and top-platform behavior.",
+	"authors": [
+		"lestx"
+	],
+	"contact": {},
+	"license": "CC0-1.0",
+	"icon": "assets/lestxs-standable-striders/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.lestxs.standable.striders.LestxsStandableStriders"
+		]
+	},
+	"mixins": [
+		"lestxs-standable-striders.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
