@@ -62,6 +62,4 @@ This project is provided "as is", without warranty of any kind, express or impli
 
 ### 9. Official project page
 
-Replace this section with the final official link once your project page is live.
-
 Official project page: `https://github.com/lestx05/lestxs-standable-striders`
