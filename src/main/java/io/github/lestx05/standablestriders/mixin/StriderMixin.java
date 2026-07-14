@@ -1,8 +1,10 @@
 package io.github.lestx05.standablestriders.mixin;
 
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Strider.class)
-public abstract class StriderMixin {
+public abstract class StriderMixin extends Entity {
 	@Unique
 	private static final int STANDABLE_STRIDERS$STILL_TIMEOUT = 10;
 
@@ -28,6 +30,10 @@ public abstract class StriderMixin {
 
 	@Unique
 	private double standableStriders$lockedZ;
+
+	protected StriderMixin(EntityType<?> entityType, Level level) {
+		super(entityType, level);
+	}
 
 	@Inject(method = "tick", at = @At("HEAD"))
 	private void standableStriders$beginTick(CallbackInfo callbackInfo) {
@@ -80,6 +86,7 @@ public abstract class StriderMixin {
 	 * player already above the top face is accepted immediately to avoid falling
 	 * through before the server state catches up.
 	 */
+	@Override
 	public boolean canBeCollidedWith(@Nullable Entity entity) {
 		Strider strider = standableStriders$self();
 		if (!strider.isAlive()) {
@@ -142,4 +149,3 @@ public abstract class StriderMixin {
 		return (Strider) (Object) this;
 	}
 }
-
