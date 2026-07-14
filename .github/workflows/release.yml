@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - ".github/workflows/release.yml"
+      - "gradle.properties"
   workflow_dispatch:
     inputs:
       tag:
@@ -71,6 +72,9 @@ jobs:
 
       - name: Build release JAR
         run: ./gradlew build
+
+      - name: Smoke-test dedicated server bootstrap
+        run: python3 scripts/smoke_test_server.py
 
       - name: Verify release asset
         shell: bash

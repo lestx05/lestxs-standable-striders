@@ -26,9 +26,11 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: Smoke-test dedicated server bootstrap
+        run: python3 scripts/smoke_test_server.py
+
       - name: Upload mod artifacts
         uses: actions/upload-artifact@v7
         with:
           name: standable-striders
           path: build/libs/*.jar
-

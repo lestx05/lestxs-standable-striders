@@ -70,16 +70,6 @@ public abstract class StriderMixin extends Entity {
 		standableStriders$stopMovement(strider);
 	}
 
-	@Inject(method = "travel", at = @At("HEAD"), cancellable = true)
-	private void standableStriders$preventTravel(Vec3 movementInput, CallbackInfo callbackInfo) {
-		if (!standableStriders$isStayingStill()) {
-			return;
-		}
-
-		standableStriders$stopMovement(standableStriders$self());
-		callbackInfo.cancel();
-	}
-
 	/**
 	 * Mirrors the Happy Ghast's platform collision rules: an alive strider becomes
 	 * collidable while its short stillness timeout is active. On the client, a
