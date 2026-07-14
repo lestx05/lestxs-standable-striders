@@ -21,6 +21,13 @@ the same detection volume and 10-tick grace period as the vanilla Happy Ghast.
 - Fabric Loader 0.19.3 or newer
 - Fabric API 0.141.4+1.21.11 or newer compatible 1.21.11 build
 
+## Download
+
+Download the ready-to-use mod JAR from
+[GitHub Releases](https://github.com/lestx05/lestxs-standable-striders/releases).
+Use the file named `standable-striders-<version>.jar`; source and development
+JARs are not required to play.
+
 ## Build
 
 ```bash
@@ -39,6 +46,7 @@ implemented by `StriderMixin`; no vanilla files are replaced.
 ## Status
 
 This is the initial development scaffold. The project builds automatically on
-every push and pull request, but the behavior should still be tested in-game
-with single player, multiplayer, lava movement, leads, and strider riders.
-
+every push and pull request. Version tags publish the remapped JAR and its
+SHA-256 checksum to GitHub Releases automatically. The behavior should still be
+tested in-game with single player, multiplayer, lava movement, leads, and
+strider riders.
