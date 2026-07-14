@@ -138,6 +138,42 @@ public abstract class StriderMixin extends Animal {
 		}
 	}
 
+	/**
+	 * Damage knockback must not move a strider that is acting as a platform.
+	 * Damage itself is still applied normally.
+	 */
+	@Override
+	public void knockback(double strength, double x, double z) {
+		if (standableStriders$isPlatformActive(standableStriders$self())) {
+			return;
+		}
+
+		super.knockback(strength, x, z);
+	}
+
+	/**
+	 * Reject external impulses (including explosion and entity push vectors)
+	 * while platformed. Gravity is preserved because it updates velocity
+	 * directly instead of using these push methods.
+	 */
+	@Override
+	public void push(Vec3 movement) {
+		if (standableStriders$isPlatformActive(standableStriders$self())) {
+			return;
+		}
+
+		super.push(movement);
+	}
+
+	@Override
+	public void push(double x, double y, double z) {
+		if (standableStriders$isPlatformActive(standableStriders$self())) {
+			return;
+		}
+
+		super.push(x, y, z);
+	}
+
 	@Override
 	protected void addPassenger(Entity passenger) {
 		super.addPassenger(passenger);
@@ -330,9 +366,14 @@ public abstract class StriderMixin extends Animal {
 	@Unique
 	private void standableStriders$applyPlatformRotation(Strider strider) {
 		strider.setYRot(standableStriders$lockedYaw);
+		strider.yRotO = standableStriders$lockedYaw;
+		strider.setXRot(0.0F);
+		strider.xRotO = 0.0F;
 		strider.setYHeadRot(standableStriders$lockedYaw);
 		strider.yBodyRot = standableStriders$lockedYaw;
+		strider.yBodyRotO = standableStriders$lockedYaw;
 		strider.yHeadRot = standableStriders$lockedYaw;
+		strider.yHeadRotO = standableStriders$lockedYaw;
 	}
 
 	@Unique

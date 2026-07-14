@@ -24,6 +24,7 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 				new Vec3(0.5, 1.0, 0.5)
 		);
 		strider.setYRot(52.0F);
+		strider.setXRot(28.0F);
 		strider.setYHeadRot(52.0F);
 		strider.setYBodyRot(52.0F);
 
@@ -52,6 +53,36 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 							Math.abs(strider.getYRot() - 90.0F) <= ROTATION_TOLERANCE,
 							"Platform entry must snap 52 degrees to 90 degrees"
 					);
+					context.assertTrue(
+							Math.abs(strider.getXRot()) <= ROTATION_TOLERANCE
+									&& Math.abs(strider.xRotO) <= ROTATION_TOLERANCE,
+							"Platform state must lock the head pitch straight ahead"
+					);
+
+					float healthBeforeDamage = strider.getHealth();
+					Vec3 movementBeforeDamage = strider.getDeltaMovement();
+					boolean tookDamage = strider.hurtServer(
+							context.getLevel(),
+							strider.damageSources().playerAttack(player),
+							2.0F
+					);
+					context.assertTrue(
+							tookDamage && strider.getHealth() < healthBeforeDamage,
+							"Platform locking must not make the strider immune to damage"
+					);
+					context.assertTrue(
+							strider.getDeltaMovement().distanceToSqr(movementBeforeDamage)
+									<= POSITION_TOLERANCE * POSITION_TOLERANCE,
+							"Damage must not apply knockback while platformed"
+					);
+
+					strider.knockback(1.0, 1.0, 1.0);
+					strider.push(new Vec3(0.6, 0.6, 0.6));
+					context.assertTrue(
+							strider.getDeltaMovement().distanceToSqr(movementBeforeDamage)
+									<= POSITION_TOLERANCE * POSITION_TOLERANCE,
+							"Platform state must reject knockback and external push vectors"
+					);
 					strider.setDeltaMovement(0.4, strider.getDeltaMovement().y, 0.4);
 				})
 				.thenIdle(2)
@@ -64,6 +95,10 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 					context.assertTrue(
 							Math.abs(strider.getYRot() - 90.0F) <= ROTATION_TOLERANCE,
 							"Platform state must retain its snapped rotation"
+					);
+					context.assertTrue(
+							Math.abs(strider.getXRot()) <= ROTATION_TOLERANCE,
+							"Platform state must keep the head pitch locked after damage"
 					);
 					player.snapTo(
 							strider.getX() + 10.0,

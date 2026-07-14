@@ -11,9 +11,12 @@ on top, provided a collidable block directly supports the strider.
 - Synchronizes platform state between server and client, including the Happy
   Ghast's precise position update on entry and 10-tick exit grace period.
 - Snaps to and locks the nearest multiple of 90 degrees based on the strider's
-  facing direction when platform mode begins.
+  facing direction when platform mode begins, while locking its head pitch at
+  0 degrees so it keeps looking straight ahead.
 - Stops navigation, rider control, horizontal movement, and horizontal drift
   while preserving vertical velocity and gravity.
+- Still takes damage normally, but rejects damage knockback, explosions, and
+  other external push vectors while acting as a platform.
 - Requires a collidable block directly below the strider. Lava, another entity,
   or empty space alone cannot support platform mode.
 - Preserves the short platform timeout through world saves and uses the same
@@ -52,7 +55,8 @@ implemented by `StriderMixin`; no vanilla files are replaced.
 ## Status
 
 The project builds, runs automated in-world GameTests for platform entry,
-90-degree rotation locking, horizontal locking, the 10-tick grace period,
-support removal, and resumed falling, then performs a dedicated-server bootstrap
-test on every push and pull request. Version changes publish the remapped JAR
-and its SHA-256 checksum only after these checks pass.
+90-degree yaw and zero-degree head-pitch locking, damage without knockback,
+horizontal locking, the 10-tick grace period, support removal, and resumed
+falling, then performs a dedicated-server bootstrap test on every push and pull
+request. Version changes publish the remapped JAR and its SHA-256 checksum only
+after these checks pass.
