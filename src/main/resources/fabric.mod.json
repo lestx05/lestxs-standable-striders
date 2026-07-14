@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "standable_striders",
+  "version": "${version}",
+  "name": "Standable Striders",
+  "description": "Makes striders stop and act as stable platforms while a player stands on top of them.",
+  "authors": [
+    "lestx05"
+  ],
+  "contact": {
+    "sources": "https://github.com/lestx05/lestxs-standable-striders",
+    "issues": "https://github.com/lestx05/lestxs-standable-striders/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.lestx05.standablestriders.StandableStriders"
+    ]
+  },
+  "mixins": [
+    "standable_striders.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-api": ">=0.141.4"
+  }
+}
+

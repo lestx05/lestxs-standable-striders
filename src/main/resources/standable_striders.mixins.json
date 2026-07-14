@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "io.github.lestx05.standablestriders.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "StriderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+
