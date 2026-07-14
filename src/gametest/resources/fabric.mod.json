@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "standable_striders_gametest",
+  "version": "1.0.0",
+  "name": "Standable Striders Game Tests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "io.github.lestx05.standablestriders.gametest.StandableStridersGameTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "standable_striders": "*"
+  }
+}

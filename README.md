@@ -51,6 +51,8 @@ implemented by `StriderMixin`; no vanilla files are replaced.
 
 ## Status
 
-The project builds and performs a dedicated-server bootstrap test automatically
-on every push and pull request. Version changes publish the remapped JAR and its
-SHA-256 checksum to GitHub Releases only after the same bootstrap test passes.
+The project builds, runs automated in-world GameTests for platform entry,
+90-degree rotation locking, horizontal locking, the 10-tick grace period,
+support removal, and resumed falling, then performs a dedicated-server bootstrap
+test on every push and pull request. Version changes publish the remapped JAR
+and its SHA-256 checksum only after these checks pass.
