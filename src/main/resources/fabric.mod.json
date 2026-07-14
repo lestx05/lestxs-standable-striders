@@ -3,7 +3,7 @@
   "id": "standable_striders",
   "version": "${version}",
   "name": "Standable Striders",
-  "description": "Makes striders stop and act as stable platforms while a player stands on top of them.",
+  "description": "Gives supported striders the Happy Ghast platform behavior while a player stands on top.",
   "authors": [
     "lestx05"
   ],
@@ -28,4 +28,3 @@
     "fabric-api": ">=0.141.4"
   }
 }
-

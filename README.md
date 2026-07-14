@@ -1,17 +1,23 @@
 # Standable Striders
 
-A lightweight Fabric mod for Minecraft Java Edition 1.21.11. Striders stop and
-act as stable platforms whenever a player stands on top of their hitbox, using
-the same detection volume and 10-tick grace period as the vanilla Happy Ghast.
+A lightweight Fabric mod for Minecraft Java Edition 1.21.11. Adult striders
+copy the vanilla Happy Ghast's platform-state behavior whenever a player stands
+on top, provided a collidable block directly supports the strider.
 
 ## Current behavior
 
-- Detects non-spectator players above a strider.
-- Stops navigation, travel, and velocity while the strider is being used as a
-  platform.
-- Keeps the strider still for 10 ticks after the player leaves, matching the
-  Happy Ghast's short grace period.
-- Ignores players who are riding a strider normally.
+- Uses the Happy Ghast's exact player detection volume and root-vehicle point
+  check, ignoring spectators and players riding striders.
+- Synchronizes platform state between server and client, including the Happy
+  Ghast's precise position update on entry and 10-tick exit grace period.
+- Snaps to and locks the nearest multiple of 90 degrees based on the strider's
+  facing direction when platform mode begins.
+- Stops navigation, rider control, horizontal movement, and horizontal drift
+  while preserving vertical velocity and gravity.
+- Requires a collidable block directly below the strider. Lava, another entity,
+  or empty space alone cannot support platform mode.
+- Preserves the short platform timeout through world saves and uses the same
+  60-tick post-load grace period as the Happy Ghast.
 - Runs on both dedicated servers and integrated single-player servers.
 
 ## Requirements
@@ -45,8 +51,6 @@ implemented by `StriderMixin`; no vanilla files are replaced.
 
 ## Status
 
-This is the initial development scaffold. The project builds automatically on
-every push and pull request. Version tags publish the remapped JAR and its
-SHA-256 checksum to GitHub Releases automatically. The behavior should still be
-tested in-game with single player, multiplayer, lava movement, leads, and
-strider riders.
+The project builds and performs a dedicated-server bootstrap test automatically
+on every push and pull request. Version changes publish the remapped JAR and its
+SHA-256 checksum to GitHub Releases only after the same bootstrap test passes.
