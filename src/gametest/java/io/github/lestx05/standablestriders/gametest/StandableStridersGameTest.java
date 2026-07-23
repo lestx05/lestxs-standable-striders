@@ -1,26 +1,33 @@
 package io.github.lestx05.standablestriders.gametest;
 
+import com.mojang.authlib.GameProfile;
+import io.netty.channel.embedded.EmbeddedChannel;
 import java.lang.reflect.Method;
+import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.CustomTestMethodInvoker;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.monster.Strider;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+@SuppressWarnings("removal")
 public final class StandableStridersGameTest implements CustomTestMethodInvoker {
 	private static final double POSITION_TOLERANCE = 1.0E-4;
 	private static final float ROTATION_TOLERANCE = 1.0E-4F;
 
 	@GameTest
-	@SuppressWarnings("removal")
 	public void happyGhastPlatformParity(GameTestHelper context) {
 		context.setBlock(0, 0, 0, Blocks.STONE);
 
 		Strider strider = (Strider) context.spawnWithNoFreeWill(
-				EntityType.STRIDER,
+				EntityTypes.STRIDER,
 				new Vec3(0.5, 1.0, 0.5)
 		);
 		strider.setYRot(52.0F);
@@ -54,6 +61,18 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 							"Platform entry must snap 52 degrees to 90 degrees"
 					);
 					context.assertTrue(
+							Math.abs(strider.yRotO - 90.0F) <= ROTATION_TOLERANCE
+									&& Math.abs(strider.getYHeadRot() - 90.0F)
+											<= ROTATION_TOLERANCE
+									&& Math.abs(strider.yHeadRotO - 90.0F)
+											<= ROTATION_TOLERANCE
+									&& Math.abs(strider.yBodyRot - 90.0F)
+											<= ROTATION_TOLERANCE
+									&& Math.abs(strider.yBodyRotO - 90.0F)
+											<= ROTATION_TOLERANCE,
+							"Platform state must lock body, head, and previous yaw values"
+					);
+					context.assertTrue(
 							Math.abs(strider.getXRot()) <= ROTATION_TOLERANCE
 									&& Math.abs(strider.xRotO) <= ROTATION_TOLERANCE,
 							"Platform state must lock the head pitch straight ahead"
@@ -76,13 +95,22 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 							"Damage must not apply knockback while platformed"
 					);
 
-					strider.knockback(1.0, 1.0, 1.0);
+					strider.knockback(
+							1.0,
+							1.0,
+							1.0,
+							strider.damageSources().playerAttack(player),
+							1.0F,
+							false
+					);
 					strider.push(new Vec3(0.6, 0.6, 0.6));
 					context.assertTrue(
 							strider.getDeltaMovement().distanceToSqr(movementBeforeDamage)
 									<= POSITION_TOLERANCE * POSITION_TOLERANCE,
 							"Platform state must reject knockback and external push vectors"
 					);
+					strider.setLeashedTo(player, false);
+					strider.getLeashData().angularMomentum = 1.0;
 					strider.setDeltaMovement(0.4, strider.getDeltaMovement().y, 0.4);
 				})
 				.thenIdle(2)
@@ -100,6 +128,12 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 							Math.abs(strider.getXRot()) <= ROTATION_TOLERANCE,
 							"Platform state must keep the head pitch locked after damage"
 					);
+					context.assertTrue(
+							Math.abs(strider.getLeashData().angularMomentum)
+									<= POSITION_TOLERANCE,
+							"Platform state must clear angular leash momentum"
+					);
+					strider.removeLeash();
 					player.snapTo(
 							strider.getX() + 10.0,
 							player.getY(),
@@ -127,6 +161,188 @@ public final class StandableStridersGameTest implements CustomTestMethodInvoker 
 					player.discard();
 				})
 				.thenSucceed();
+	}
+
+	@GameTest(maxTicks = 100)
+	public void platformTimeoutExpiresAfterTenTicks(GameTestHelper context) {
+		context.setBlock(0, 0, 0, Blocks.STONE);
+
+		Strider strider = (Strider) context.spawnWithNoFreeWill(
+				EntityTypes.STRIDER,
+				new Vec3(0.5, 1.0, 0.5)
+		);
+		ServerPlayer player = context.makeMockServerPlayerInLevel();
+		player.setNoGravity(true);
+		player.snapTo(
+				strider.getX(),
+				strider.getBoundingBox().maxY + 0.01,
+				strider.getZ(),
+				0.0F,
+				0.0F
+		);
+
+		context.startSequence()
+				.thenIdle(65)
+				.thenExecute(() -> player.snapTo(
+						strider.getX() + 10.0,
+						player.getY(),
+						strider.getZ() + 10.0,
+						0.0F,
+						0.0F
+				))
+				.thenIdle(9)
+				.thenExecute(() -> context.assertTrue(
+						strider.canBeCollidedWith(player),
+						"Platform state must remain active through timeout tick nine"
+				))
+				.thenIdle(1)
+				.thenExecute(() -> {
+					context.assertFalse(
+							strider.canBeCollidedWith(player),
+							"Platform state must expire after ten ticks without a player"
+					);
+					player.discard();
+				})
+				.thenSucceed();
+	}
+
+	@GameTest
+	public void unsupportedLavaNeverActivatesPlatform(GameTestHelper context) {
+		context.setBlock(0, 0, 0, Blocks.LAVA);
+
+		Strider strider = (Strider) context.spawnWithNoFreeWill(
+				EntityTypes.STRIDER,
+				new Vec3(0.5, 1.0, 0.5)
+		);
+		strider.setNoGravity(true);
+		ServerPlayer player = context.makeMockServerPlayerInLevel();
+		player.setNoGravity(true);
+		player.snapTo(
+				strider.getX(),
+				strider.getBoundingBox().maxY + 0.01,
+				strider.getZ(),
+				0.0F,
+				0.0F
+		);
+
+		context.startSequence()
+				.thenIdle(3)
+				.thenExecute(() -> {
+					context.assertFalse(
+							strider.canBeCollidedWith(player),
+							"Lava without a collidable block must not support platform mode"
+					);
+					player.discard();
+				})
+				.thenSucceed();
+	}
+
+	@GameTest
+	public void babiesNeverActivatePlatform(GameTestHelper context) {
+		context.setBlock(0, 0, 0, Blocks.STONE);
+
+		Strider strider = (Strider) context.spawnWithNoFreeWill(
+				EntityTypes.STRIDER,
+				new Vec3(0.5, 1.0, 0.5)
+		);
+		strider.setBaby(true);
+		ServerPlayer player = context.makeMockServerPlayerInLevel();
+		player.setNoGravity(true);
+		player.snapTo(
+				strider.getX(),
+				strider.getBoundingBox().maxY + 0.01,
+				strider.getZ(),
+				0.0F,
+				0.0F
+		);
+
+		context.startSequence()
+				.thenIdle(3)
+				.thenExecute(() -> {
+					context.assertFalse(
+							strider.canBeCollidedWith(player),
+							"Baby striders must never become platforms"
+					);
+					player.discard();
+				})
+				.thenSucceed();
+	}
+
+	@GameTest
+	public void spectatorsAndRidersAreIgnored(GameTestHelper context) {
+		context.setBlock(0, 0, 0, Blocks.STONE);
+
+		Strider strider = (Strider) context.spawnWithNoFreeWill(
+				EntityTypes.STRIDER,
+				new Vec3(0.5, 1.0, 0.5)
+		);
+		Strider otherStrider = (Strider) context.spawnWithNoFreeWill(
+				EntityTypes.STRIDER,
+				new Vec3(3.5, 1.0, 0.5)
+		);
+		ServerPlayer player = makeServerPlayerInLevel(context, "spectator-test");
+		player.setNoGravity(true);
+		context.assertTrue(
+				player.setGameMode(GameType.SPECTATOR) && player.isSpectator(),
+				"Test player must enter spectator mode"
+		);
+		player.snapTo(
+				strider.getX(),
+				strider.getBoundingBox().maxY + 0.01,
+				strider.getZ(),
+				0.0F,
+				0.0F
+		);
+
+		context.startSequence()
+				.thenIdle(3)
+				.thenExecute(() -> {
+					context.assertFalse(
+							strider.canBeCollidedWith(player),
+							"Spectators above a strider must not activate platform mode"
+					);
+					player.setGameMode(GameType.SURVIVAL);
+					context.assertTrue(
+							player.startRiding(strider, true, false),
+							"Mock player must be able to ride the strider for this test"
+					);
+				})
+				.thenIdle(3)
+				.thenExecute(() -> {
+					context.assertFalse(
+							strider.canBeCollidedWith(player),
+							"A player riding the same strider must not activate platform mode"
+					);
+					context.assertTrue(
+							strider.canBeCollidedWith(otherStrider),
+							"A ridden strider must retain the Happy Ghast vehicle collision rule"
+					);
+					player.stopRiding();
+					context.getLevel().getServer().getPlayerList().remove(player);
+				})
+				.thenSucceed();
+	}
+
+	private static ServerPlayer makeServerPlayerInLevel(
+			GameTestHelper context,
+			String name
+	) {
+		GameProfile profile = new GameProfile(UUID.randomUUID(), name);
+		CommonListenerCookie cookie = CommonListenerCookie.createInitial(profile, false);
+		ServerPlayer player = new ServerPlayer(
+				context.getLevel().getServer(),
+				context.getLevel(),
+				profile,
+				cookie.clientInformation()
+		);
+		Connection connection = new Connection(PacketFlow.SERVERBOUND);
+		new EmbeddedChannel(connection);
+		context.getLevel().getServer().getPlayerList().placeNewPlayer(
+				connection,
+				player,
+				cookie
+		);
+		return player;
 	}
 
 	@Override

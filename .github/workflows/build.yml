@@ -17,14 +17,20 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v6
 
-      - name: Set up Java 21
+      - name: Set up Java 25
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
+          java-version: "25"
           distribution: microsoft
 
       - name: Build
         run: ./gradlew build
+
+      - name: Validate changelog release notes
+        shell: bash
+        run: |
+          version="$(sed -n 's/^mod_version=//p' gradle.properties)"
+          python3 scripts/extract_release_notes.py CHANGELOG.md "$version" >/dev/null
 
       - name: Smoke-test dedicated server bootstrap
         run: python3 scripts/smoke_test_server.py

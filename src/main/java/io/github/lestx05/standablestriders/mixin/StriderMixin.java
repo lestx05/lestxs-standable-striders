@@ -5,8 +5,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.Strider;
@@ -143,12 +146,19 @@ public abstract class StriderMixin extends Animal {
 	 * Damage itself is still applied normally.
 	 */
 	@Override
-	public void knockback(double strength, double x, double z) {
+	public void knockback(
+			double power,
+			double xd,
+			double zd,
+			DamageSource source,
+			float damage,
+			boolean comesFromEffect
+	) {
 		if (standableStriders$isPlatformActive(standableStriders$self())) {
 			return;
 		}
 
-		super.knockback(strength, x, z);
+		super.knockback(power, xd, zd, source, damage, comesFromEffect);
 	}
 
 	/**
@@ -237,6 +247,10 @@ public abstract class StriderMixin extends Animal {
 		if (level().isClientSide()
 				&& other instanceof Player
 				&& other.position().y >= strider.getBoundingBox().maxY) {
+			return true;
+		}
+
+		if (strider.isVehicle() && other instanceof Strider) {
 			return true;
 		}
 
@@ -337,7 +351,7 @@ public abstract class StriderMixin extends Animal {
 		standableStriders$lockedX = strider.getX();
 		standableStriders$lockedZ = strider.getZ();
 		standableStriders$lockedYaw = strider.getYRot()
-				- standableStriders$wrapDegrees90(strider.getYRot());
+				- Mth.wrapDegrees90(strider.getYRot());
 		standableStriders$applyPlatformRotation(strider);
 	}
 
@@ -361,6 +375,11 @@ public abstract class StriderMixin extends Animal {
 
 		Vec3 movement = strider.getDeltaMovement();
 		strider.setDeltaMovement(0.0, movement.y, 0.0);
+
+		Leashable.LeashData leashData = strider.getLeashData();
+		if (leashData != null) {
+			leashData.angularMomentum = 0.0;
+		}
 	}
 
 	@Unique
@@ -374,20 +393,6 @@ public abstract class StriderMixin extends Animal {
 		strider.yBodyRotO = standableStriders$lockedYaw;
 		strider.yHeadRot = standableStriders$lockedYaw;
 		strider.yHeadRotO = standableStriders$lockedYaw;
-	}
-
-	@Unique
-	private static float standableStriders$wrapDegrees90(float angle) {
-		float normalizedAngle = angle % 90.0F;
-		if (normalizedAngle >= 45.0F) {
-			normalizedAngle -= 90.0F;
-		}
-
-		if (normalizedAngle < -45.0F) {
-			normalizedAngle += 90.0F;
-		}
-
-		return normalizedAngle;
 	}
 
 	@Unique

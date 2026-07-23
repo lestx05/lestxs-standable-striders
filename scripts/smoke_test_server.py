@@ -12,21 +12,36 @@ import sys
 import time
 
 
-RUN_DIRECTORY = Path("run")
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+RUN_DIRECTORY = REPOSITORY_ROOT / "run"
 LATEST_LOG = RUN_DIRECTORY / "logs" / "latest.log"
 PROCESS_LOG = RUN_DIRECTORY / "server-smoke-output.log"
 STARTUP_TIMEOUT_SECONDS = 120
+IS_WINDOWS = os.name == "nt"
+GRADLE_WRAPPER = REPOSITORY_ROOT / ("gradlew.bat" if IS_WINDOWS else "gradlew")
 
 
 def stop_process_group(process: subprocess.Popen[str]) -> None:
 	if process.poll() is not None:
 		return
 
-	os.killpg(process.pid, signal.SIGTERM)
+	if IS_WINDOWS:
+		subprocess.run(
+			["taskkill", "/PID", str(process.pid), "/T", "/F"],
+			check=False,
+			stdout=subprocess.DEVNULL,
+			stderr=subprocess.DEVNULL,
+		)
+	else:
+		os.killpg(process.pid, signal.SIGTERM)
+
 	try:
 		process.wait(timeout=10)
 	except subprocess.TimeoutExpired:
-		os.killpg(process.pid, signal.SIGKILL)
+		if IS_WINDOWS:
+			process.kill()
+		else:
+			os.killpg(process.pid, signal.SIGKILL)
 		process.wait(timeout=10)
 
 
@@ -43,14 +58,26 @@ def main() -> int:
 	RUN_DIRECTORY.mkdir(parents=True)
 	(RUN_DIRECTORY / "eula.txt").write_text("eula=true\n", encoding="utf-8")
 
+	process_options: dict[str, object] = {}
+	if IS_WINDOWS:
+		process_options["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+	else:
+		process_options["start_new_session"] = True
+
 	with PROCESS_LOG.open("w", encoding="utf-8") as output:
 		process = subprocess.Popen(
-			["./gradlew", "runServer", "--args=nogui", "--no-daemon"],
+			[
+				str(GRADLE_WRAPPER),
+				"runServer",
+				"--args=nogui",
+				"--no-daemon",
+			],
 			stdin=subprocess.DEVNULL,
 			stdout=output,
 			stderr=subprocess.STDOUT,
 			text=True,
-			start_new_session=True,
+			cwd=REPOSITORY_ROOT,
+			**process_options,
 		)
 
 		deadline = time.monotonic() + STARTUP_TIMEOUT_SECONDS

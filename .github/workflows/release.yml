@@ -4,17 +4,6 @@ on:
   push:
     tags:
       - "v*"
-    branches:
-      - main
-    paths:
-      - ".github/workflows/release.yml"
-      - "gradle.properties"
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release tag, for example v0.2.0"
-        required: true
-        type: string
 
 permissions:
   contents: write
@@ -33,34 +22,28 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v6
 
-      - name: Set up Java 21
+      - name: Set up Java 25
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "25"
           cache: gradle
 
       - name: Resolve and validate release version
         id: release
         shell: bash
-        env:
-          REQUESTED_TAG: ${{ inputs.tag }}
         run: |
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            tag="$GITHUB_REF_NAME"
-          elif [[ -n "$REQUESTED_TAG" ]]; then
-            tag="$REQUESTED_TAG"
-          else
-            tag="v$(sed -n 's/^mod_version=//p' gradle.properties)"
-          fi
+          tag="$GITHUB_REF_NAME"
+          semver_pattern='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(\+([0-9A-Za-z-]+)(\.[0-9A-Za-z-]+)*)?$'
 
-          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Invalid release tag: $tag" >&2
+          if [[ ! "$tag" =~ $semver_pattern ]]; then
+            echo "Invalid Semantic Version release tag: $tag" >&2
             exit 1
           fi
 
           version="${tag#v}"
           project_version="$(sed -n 's/^mod_version=//p' gradle.properties)"
+          minecraft_version="$(sed -n 's/^minecraft_version=//p' gradle.properties)"
           if [[ "$version" != "$project_version" ]]; then
             echo "Tag $tag does not match mod_version=$project_version" >&2
             exit 1
@@ -68,6 +51,7 @@ jobs:
 
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "minecraft_version=$minecraft_version" >> "$GITHUB_OUTPUT"
           echo "jar=build/libs/standable-striders-$version.jar" >> "$GITHUB_OUTPUT"
 
       - name: Build release JAR
@@ -85,29 +69,66 @@ jobs:
           unzip -t "$RELEASE_JAR"
           sha256sum "$RELEASE_JAR" | sed 's#  .*/#  #' > SHA256SUMS.txt
 
+      - name: Prepare curated release notes
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          python3 scripts/extract_release_notes.py \
+            CHANGELOG.md \
+            "$RELEASE_VERSION" \
+            > RELEASE_NOTES.md
+
       - name: Publish GitHub Release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          MINECRAFT_VERSION: ${{ steps.release.outputs.minecraft_version }}
           RELEASE_JAR: ${{ steps.release.outputs.jar }}
         run: |
-          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "$RELEASE_JAR" SHA256SUMS.txt \
-              --clobber \
-              --repo "$GITHUB_REPOSITORY"
-            exit 0
+          release_create_flags=()
+          release_edit_flags=(--draft=false)
+          version_without_build_metadata="${RELEASE_VERSION%%+*}"
+          if [[ "$version_without_build_metadata" == *-* ]]; then
+            release_create_flags+=(--prerelease)
+            release_edit_flags+=(--prerelease --latest=false)
+          else
+            release_create_flags+=(--latest)
+            release_edit_flags+=(--prerelease=false --latest)
           fi
 
-          release_flags=()
-          if [[ "$RELEASE_VERSION" == 0.* || "$RELEASE_VERSION" == *-* ]]; then
-            release_flags+=(--prerelease)
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            for asset_path in "$RELEASE_JAR" SHA256SUMS.txt; do
+              asset_name="${asset_path##*/}"
+              local_digest="sha256:$(sha256sum "$asset_path" | cut -d' ' -f1)"
+              remote_digest="$(
+                gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" \
+                  --jq ".assets[] | select(.name == \"$asset_name\") | .digest"
+              )"
+
+              if [[ -z "$remote_digest" ]]; then
+                gh release upload "$RELEASE_TAG" "$asset_path" \
+                  --repo "$GITHUB_REPOSITORY"
+              elif [[ "$remote_digest" != "$local_digest" ]]; then
+                echo "Published asset $asset_name has a different SHA-256 digest." >&2
+                exit 1
+              fi
+            done
+
+            gh release edit "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Standable Striders $RELEASE_TAG - Minecraft $MINECRAFT_VERSION (Fabric)" \
+              --notes-file RELEASE_NOTES.md \
+              "${release_edit_flags[@]}"
+            exit 0
           fi
 
           gh release create "$RELEASE_TAG" "$RELEASE_JAR" SHA256SUMS.txt \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Standable Striders $RELEASE_TAG" \
-            --generate-notes \
-            "${release_flags[@]}"
+            --verify-tag \
+            --title "Standable Striders $RELEASE_TAG - Minecraft $MINECRAFT_VERSION (Fabric)" \
+            --notes-file RELEASE_NOTES.md \
+            "${release_create_flags[@]}"
