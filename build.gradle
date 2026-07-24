@@ -52,7 +52,7 @@ java {
 	targetCompatibility = JavaVersion.VERSION_25
 }
 
-jar {
+tasks.withType(Jar).configureEach {
 	from("LICENSE") {
 		rename { "${it}_${project.name}" }
 	}

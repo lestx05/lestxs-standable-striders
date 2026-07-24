@@ -7,6 +7,23 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Public contribution, support, security, Code of Conduct, and release
+  documentation.
+- Structured GitHub forms for bug reports, compatibility reports, feature
+  requests, and support questions.
+- A pull request template, issue-routing configuration, and repository
+  ownership rules.
+- Weekly Dependabot checks for Gradle and GitHub Actions dependencies.
+- Expanded installation, compatibility, troubleshooting, and community
+  guidance in the README.
+
+### Changed
+
+- All generated JARs, including the sources JAR, now contain the MIT license.
+- Fabric metadata now links to the current project homepage.
+
 ## [1.0.0] - 2026-07-23
 
 ### Added

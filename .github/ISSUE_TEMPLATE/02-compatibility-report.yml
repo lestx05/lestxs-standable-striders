@@ -1,0 +1,103 @@
+name: Mod compatibility report
+description: Report a conflict that appears only when another mod is installed.
+title: "[Compatibility]: "
+labels:
+  - bug
+  - compatibility
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Compatibility reports need a controlled comparison. Test both with and without the suspected mod whenever possible.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checks
+      options:
+        - label: I searched open and closed issues for this mod combination.
+          required: true
+        - label: I am using current compatible releases rather than duplicate or outdated JARs.
+          required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Standable Striders, Minecraft, Fabric Loader, Fabric API, and Java versions
+      placeholder: "Standable Striders 1.0.0; Minecraft 26.2; Loader 0.19.3; Fabric API 0.155.2+26.2; Java 25"
+    validations:
+      required: true
+  - type: input
+    id: conflicting-mod
+    attributes:
+      label: Suspected conflicting mod
+      description: Include its exact name, version, and project URL.
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Single-player or integrated server
+        - Dedicated server with the mod on server and client
+        - Dedicated server only
+        - Client connected to another server
+    validations:
+      required: true
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Behavior with both mods installed
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Describe how the mods should behave together.
+    validations:
+      required: true
+  - type: dropdown
+    id: without-conflict
+    attributes:
+      label: Result after removing the suspected mod
+      options:
+        - The issue disappears
+        - The issue still occurs
+        - I could not perform this test
+    validations:
+      required: true
+  - type: dropdown
+    id: minimal-profile
+    attributes:
+      label: Result with only Standable Striders, the suspected mod, Fabric API, and required dependencies
+      options:
+        - The issue still occurs
+        - The issue does not occur
+        - I could not perform this test
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide a concise, numbered sequence.
+    validations:
+      required: true
+  - type: textarea
+    id: mod-list
+    attributes:
+      label: Full mod list
+      description: Attach or paste the list used when the problem occurs.
+  - type: upload
+    id: diagnostics
+    attributes:
+      label: Logs, crash reports, or other evidence
+      description: Upload relevant files after removing tokens and private addresses.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the project's [Code of Conduct](https://github.com/lestx05/lestxs-standable-striders/blob/main/CODE_OF_CONDUCT.md).
+          required: true

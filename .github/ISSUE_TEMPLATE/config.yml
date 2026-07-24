@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/lestx05/lestxs-standable-striders/security/advisories/new
+    about: Do not disclose vulnerabilities in a public issue.
+  - name: Download an official release
+    url: https://github.com/lestx05/lestxs-standable-striders/releases
+    about: Check supported Minecraft versions and download verified release JARs.

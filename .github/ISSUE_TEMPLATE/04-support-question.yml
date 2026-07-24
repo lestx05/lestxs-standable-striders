@@ -1,0 +1,72 @@
+name: Support question
+description: Ask for help installing, updating, or using the mod.
+title: "[Support]: "
+labels:
+  - question
+  - support
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form is for usage help. Use the bug form for reproducible broken behavior and the private security form for vulnerabilities.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checks
+      options:
+        - label: I read the README and searched open and closed issues.
+          required: true
+        - label: I checked that every installed version matches my Minecraft release.
+          required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Standable Striders, Minecraft, Fabric Loader, Fabric API, and Java versions
+      placeholder: "Standable Striders 1.0.0; Minecraft 26.2; Loader 0.19.3; Fabric API 0.155.2+26.2; Java 25"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Single-player or integrated server
+        - Dedicated server with the mod on server and client
+        - Dedicated server only
+        - Client connected to another server
+    validations:
+      required: true
+  - type: input
+    id: operating-system-launcher
+    attributes:
+      label: Operating system and launcher
+      placeholder: "Windows 11 with Prism Launcher, Ubuntu 24.04 server, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: State what you are trying to accomplish and where you are blocked.
+    validations:
+      required: true
+  - type: textarea
+    id: attempts
+    attributes:
+      label: What have you tried?
+      description: Include documentation read, settings checked, and troubleshooting already attempted.
+    validations:
+      required: true
+  - type: upload
+    id: diagnostics
+    attributes:
+      label: Optional logs or screenshots
+      description: Upload only relevant files and remove tokens or private server addresses.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the project's [Code of Conduct](https://github.com/lestx05/lestxs-standable-striders/blob/main/CODE_OF_CONDUCT.md).
+          required: true

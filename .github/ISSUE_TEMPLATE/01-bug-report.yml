@@ -1,0 +1,134 @@
+name: Bug report
+description: Report reproducible broken behavior in Standable Striders.
+title: "[Bug]: "
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Complete every required field and remove secrets from logs before uploading them.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checks
+      options:
+        - label: I searched open and closed issues for this problem.
+          required: true
+        - label: I am using the latest Standable Striders release compatible with my Minecraft version.
+          required: true
+        - label: I removed duplicate or older Standable Striders JARs.
+          required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: Standable Striders version
+      description: Use the version shown in the JAR name or Mods screen.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: minecraft-version
+    attributes:
+      label: Minecraft version
+      placeholder: "26.2"
+    validations:
+      required: true
+  - type: input
+    id: loader-api-version
+    attributes:
+      label: Fabric Loader and Fabric API versions
+      placeholder: "Loader 0.19.3; Fabric API 0.155.2+26.2"
+    validations:
+      required: true
+  - type: input
+    id: java-version
+    attributes:
+      label: Java version
+      description: Include the output of `java -version` if possible.
+      placeholder: "OpenJDK 25.0.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Single-player or integrated server
+        - Dedicated server with the mod on server and client
+        - Dedicated server only
+        - Client connected to another server
+    validations:
+      required: true
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11, Ubuntu 24.04, macOS 15, etc."
+    validations:
+      required: true
+  - type: dropdown
+    id: download-source
+    attributes:
+      label: Download source
+      options:
+        - GitHub Releases
+        - Modrinth
+        - Built from source
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and when it occurs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Give the shortest numbered sequence that reproduces the issue.
+      placeholder: |
+        1. Create ...
+        2. Place ...
+        3. Stand ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: dropdown
+    id: minimal-profile
+    attributes:
+      label: Minimal-profile result
+      description: Test with only Standable Striders, Fabric API, and required dependencies.
+      options:
+        - The issue still occurs
+        - The issue does not occur
+        - I could not perform this test
+    validations:
+      required: true
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: Other mods
+      description: Attach a mod list or paste a short list. Write "None" for a minimal profile.
+  - type: upload
+    id: diagnostics
+    attributes:
+      label: Logs, crash reports, screenshots, or video
+      description: Upload `latest.log`, crash reports, or concise visual evidence. Remove tokens and private addresses first.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the project's [Code of Conduct](https://github.com/lestx05/lestxs-standable-striders/blob/main/CODE_OF_CONDUCT.md).
+          required: true

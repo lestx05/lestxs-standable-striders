@@ -1,0 +1,68 @@
+name: Feature request
+description: Propose a focused improvement to Standable Striders.
+title: "[Feature]: "
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Standable Striders intentionally has a narrow scope. Explain the player problem and how the proposal fits the existing platform behavior.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight check
+      options:
+        - label: I searched open and closed issues for this request.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What player need or limitation would this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the behavior precisely, including activation and exit conditions.
+    validations:
+      required: true
+  - type: textarea
+    id: vanilla-fit
+    attributes:
+      label: Fit with vanilla or Happy Ghast behavior
+      description: Explain whether this mirrors vanilla behavior or intentionally differs from it.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or different designs you considered.
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Expected technical impact
+      options:
+        - Gameplay behavior only
+        - Client-side behavior or visuals
+        - Dedicated-server behavior
+        - Client and server behavior
+        - Unsure
+    validations:
+      required: true
+  - type: upload
+    id: references
+    attributes:
+      label: Optional mockups or references
+      description: Upload concise supporting material. Do not upload copyrighted game files.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the project's [Code of Conduct](https://github.com/lestx05/lestxs-standable-striders/blob/main/CODE_OF_CONDUCT.md).
+          required: true
